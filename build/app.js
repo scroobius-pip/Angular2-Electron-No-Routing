@@ -21386,8 +21386,11 @@ webpackJsonp([1,2],[
 	var app_component_1 = __webpack_require__(677);
 	var angular2_materialize_1 = __webpack_require__(678);
 	var hero_detail_component_1 = __webpack_require__(685);
-	var hero_service_1 = __webpack_require__(687);
+	var hero_service_1 = __webpack_require__(686);
 	var heroes_component_1 = __webpack_require__(689);
+	var app_routing_1 = __webpack_require__(690);
+	var dashboard_component_1 = __webpack_require__(691);
+	var common_1 = __webpack_require__(373);
 	var AppModule = (function () {
 	    function AppModule() {
 	    }
@@ -21396,11 +21399,12 @@ webpackJsonp([1,2],[
 	            imports: [
 	                platform_browser_1.BrowserModule,
 	                forms_1.FormsModule,
+	                app_routing_1.routing,
 	            ],
 	            declarations: [
-	                app_component_1.AppComponent, hero_detail_component_1.HeroDetailComponent, angular2_materialize_1.MaterializeDirective, heroes_component_1.HeroesComponent
+	                app_component_1.AppComponent, hero_detail_component_1.HeroDetailComponent, angular2_materialize_1.MaterializeDirective, heroes_component_1.HeroesComponent, dashboard_component_1.DashboardComponent
 	            ],
-	            providers: [hero_service_1.HeroService],
+	            providers: [hero_service_1.HeroService, { provide: common_1.LocationStrategy, useClass: common_1.HashLocationStrategy }],
 	            bootstrap: [app_component_1.AppComponent],
 	        }), 
 	        __metadata('design:paramtypes', [])
@@ -26136,7 +26140,7 @@ webpackJsonp([1,2],[
 	    AppComponent = __decorate([
 	        core_1.Component({
 	            selector: 'myapp',
-	            template: "<h1>{{title}}</h1>\n    <my-heroes></my-heroes>\n    "
+	            template: "\n    <nav>\n    <div class=\"nav-wrapper\">\n          <a href=\"#\" class=\"brand-logo center\">{{title}}</a>\n\n    <ul id=\"nav-mobile\" class=\"left\">\n\n   <li><a routerLink=\"/heroes\">Heroes</a></li>\n   <li><a routerLink=\"/dashboard\">Dashboard</a></li>\n   </ul>\n   </div>\n   </nav>\n   <router-outlet></router-outlet>\n    "
 	        }), 
 	        __metadata('design:paramtypes', [])
 	    ], AppComponent);
@@ -53801,10 +53805,25 @@ webpackJsonp([1,2],[
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var core_1 = __webpack_require__(279);
-	var hero_1 = __webpack_require__(686);
+	var router_1 = __webpack_require__(371);
+	var hero_service_1 = __webpack_require__(686);
+	var hero_1 = __webpack_require__(688);
 	var HeroDetailComponent = (function () {
-	    function HeroDetailComponent() {
+	    function HeroDetailComponent(heroService, route) {
+	        this.heroService = heroService;
+	        this.route = route;
 	    }
+	    HeroDetailComponent.prototype.ngOnInit = function () {
+	        var _this = this;
+	        this.route.params.forEach(function (params) {
+	            var id = +params['id'];
+	            _this.heroService.getHero(id)
+	                .then(function (hero) { return _this.hero = hero; });
+	        });
+	    };
+	    HeroDetailComponent.prototype.goBack = function () {
+	        window.history.back();
+	    };
 	    __decorate([
 	        core_1.Input(), 
 	        __metadata('design:type', hero_1.Hero)
@@ -53812,9 +53831,9 @@ webpackJsonp([1,2],[
 	    HeroDetailComponent = __decorate([
 	        core_1.Component({
 	            selector: 'my-hero-detail',
-	            template: "<div *ngIf=\"hero\">\n  <h2>{{hero.name}} details!</h2>\n<div><label>id: </label>{{hero.id}}</div>\n<div>\n    <label>name: </label>\n    <input [(ngModel)]=\"hero.name\" placeholder=\"name\"/>\n</div>\n</div>"
+	            templateUrl: './hero-detail.component.html'
 	        }), 
-	        __metadata('design:paramtypes', [])
+	        __metadata('design:paramtypes', [hero_service_1.HeroService, router_1.ActivatedRoute])
 	    ], HeroDetailComponent);
 	    return HeroDetailComponent;
 	}());
@@ -53823,19 +53842,6 @@ webpackJsonp([1,2],[
 
 /***/ },
 /* 686 */
-/***/ function(module, exports) {
-
-	"use strict";
-	var Hero = (function () {
-	    function Hero() {
-	    }
-	    return Hero;
-	}());
-	exports.Hero = Hero;
-
-
-/***/ },
-/* 687 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -53849,7 +53855,7 @@ webpackJsonp([1,2],[
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var core_1 = __webpack_require__(279);
-	var mock_heroes_1 = __webpack_require__(688);
+	var mock_heroes_1 = __webpack_require__(687);
 	var HeroService = (function () {
 	    function HeroService() {
 	    }
@@ -53861,6 +53867,9 @@ webpackJsonp([1,2],[
 	            return setTimeout(function () { return resolve(mock_heroes_1.HEROES); }, 5000);
 	        });
 	    };
+	    HeroService.prototype.getHero = function (id) {
+	        return this.getHeroes().then(function (heroes) { return heroes.find(function (hero) { return hero.id === id; }); });
+	    };
 	    HeroService = __decorate([
 	        core_1.Injectable(), 
 	        __metadata('design:paramtypes', [])
@@ -53871,7 +53880,7 @@ webpackJsonp([1,2],[
 
 
 /***/ },
-/* 688 */
+/* 687 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -53890,6 +53899,19 @@ webpackJsonp([1,2],[
 
 
 /***/ },
+/* 688 */
+/***/ function(module, exports) {
+
+	"use strict";
+	var Hero = (function () {
+	    function Hero() {
+	    }
+	    return Hero;
+	}());
+	exports.Hero = Hero;
+
+
+/***/ },
 /* 689 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -53904,10 +53926,12 @@ webpackJsonp([1,2],[
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var core_1 = __webpack_require__(279);
-	var hero_service_1 = __webpack_require__(687);
+	var router_1 = __webpack_require__(371);
+	var hero_service_1 = __webpack_require__(686);
 	var HeroesComponent = (function () {
-	    function HeroesComponent(heroService) {
+	    function HeroesComponent(heroService, router) {
 	        this.heroService = heroService;
+	        this.router = router;
 	    }
 	    HeroesComponent.prototype.onSelect = function (hero) {
 	        this.selectedHero = hero;
@@ -53919,16 +53943,93 @@ webpackJsonp([1,2],[
 	    HeroesComponent.prototype.ngOnInit = function () {
 	        this.getHeroes();
 	    };
+	    HeroesComponent.prototype.gotoDetail = function () {
+	        this.router.navigate(['/detail', this.selectedHero.id]);
+	    };
 	    HeroesComponent = __decorate([
 	        core_1.Component({
 	            selector: 'my-heroes',
-	            template: "\n  <h2>My Heroes</h2>\n  <div class=\"collection\">\n  <a *ngFor=\"let hero of heroes\" [class.active]=\"hero === selectedHero\" (click)=\"onSelect(hero)\" href=\"#!\" class=\"collection-item\">{{hero.name}}</a>\n  </div>\n  <br>\n  <my-hero-detail [hero]=\"selectedHero\" ></my-hero-detail>\n\n  \n  ",
+	            templateUrl: './heroes.component.html'
 	        }), 
-	        __metadata('design:paramtypes', [hero_service_1.HeroService])
+	        __metadata('design:paramtypes', [hero_service_1.HeroService, router_1.Router])
 	    ], HeroesComponent);
 	    return HeroesComponent;
 	}());
 	exports.HeroesComponent = HeroesComponent;
+
+
+/***/ },
+/* 690 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var router_1 = __webpack_require__(371);
+	var heroes_component_1 = __webpack_require__(689);
+	var dashboard_component_1 = __webpack_require__(691);
+	var hero_detail_component_1 = __webpack_require__(685);
+	var appRoutes = [
+	    {
+	        path: 'heroes',
+	        component: heroes_component_1.HeroesComponent
+	    },
+	    {
+	        path: 'dashboard',
+	        component: dashboard_component_1.DashboardComponent
+	    },
+	    {
+	        path: '',
+	        redirectTo: '/dashboard',
+	        pathMatch: 'full'
+	    },
+	    {
+	        path: 'detail/:id',
+	        component: hero_detail_component_1.HeroDetailComponent
+	    }
+	];
+	exports.routing = router_1.RouterModule.forRoot(appRoutes);
+
+
+/***/ },
+/* 691 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(279);
+	var hero_service_1 = __webpack_require__(686);
+	var router_1 = __webpack_require__(371);
+	var DashboardComponent = (function () {
+	    function DashboardComponent(router, heroService) {
+	        this.router = router;
+	        this.heroService = heroService;
+	        this.heroes = [];
+	    }
+	    DashboardComponent.prototype.ngOnInit = function () {
+	        var _this = this;
+	        this.heroService.getHeroes().then(function (heroes) { return _this.heroes = heroes.slice(1, 5); });
+	    };
+	    DashboardComponent.prototype.gotoDetail = function (hero) {
+	        var link = ['/detail', hero.id];
+	        this.router.navigate(link);
+	    };
+	    DashboardComponent = __decorate([
+	        core_1.Component({
+	            selector: 'my-dashboard',
+	            templateUrl: './dashboard.component.html'
+	        }), 
+	        __metadata('design:paramtypes', [router_1.Router, hero_service_1.HeroService])
+	    ], DashboardComponent);
+	    return DashboardComponent;
+	}());
+	exports.DashboardComponent = DashboardComponent;
 
 
 /***/ }

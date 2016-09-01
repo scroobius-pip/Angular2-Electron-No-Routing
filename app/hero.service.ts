@@ -10,8 +10,13 @@ return Promise.resolve(HEROES) ;
 
     getHeroesSlowly() {
   return new Promise<Hero[]>(resolve =>
-    setTimeout(() => resolve(HEROES), 5000) // 2 seconds
+    setTimeout(() => resolve(HEROES), 5000) // 5 seconds
   );
+
+}
+
+getHero(id: number): Promise<Hero>{
+  return this.getHeroes().then(heroes => heroes.find(hero => hero.id === id ));
 }
 
 }
